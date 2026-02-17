@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Task Manager</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      .top {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      input,
+      select {
+        padding: 8px;
+      }
+
+      #container {
+        display: grid;
+        display: flex;
+        gap: 100px;
+        margin-left: 400px;
+      }
+
+      .card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 0 5px gray;
+      }
+
+      button {
+        padding: 6px 12px;
+        margin-top: 8px;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+
+      .delete {
+        background: red;
+      }
+      .edit {
+        background: green;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Task Manager</h1>
+
+    <div class="top">
+      <input type="text" id="search" placeholder="Search task" />
+
+      <select id="sort">
+        <option value="">Sort</option>
+        <option value="high">High Priority</option>
+        <option value="low">Low Priority</option>
+      </select>
+    </div>
+
+    <h2 id="total">Total Tasks: 0</h2>
+    <div id="container"></div>
+
+    <script>
+      let data = JSON.parse(localStorage.getItem("tasks")) || [];
+      let container = document.getElementById("container");
+
+      function display(tasks) {
+        container.innerHTML = "";
+        document.getElementById("total").innerText =
+          "Total Tasks: " + tasks.length;
+
+        tasks.forEach((el) => {
+          let div = document.createElement("div");
+          div.className = "card";
+
+          let t = document.createElement("h3");
+          t.innerText = el.task;
+
+          let d = document.createElement("p");
+          d.innerText = "Date: " + el.date;
+
+          let p = document.createElement("p");
+          p.innerText = "Priority: " + el.priority;
+
+          let del = document.createElement("button");
+          del.innerText = "Delete";
+          del.className = "delete";
+          del.onclick = () => deleteTask(el.id);
+
+          let edit = document.createElement("button");
+          edit.innerText = "Edit";
+          edit.className = "edit";
+          edit.style.marginLeft = "10px";
+          edit.onclick = () => editTask(el.id);
+
+          div.append(t, d, p, del, edit);
+          container.append(div);
+        });
+      }
+
+      display(data);
+
+      // search
+      document.getElementById("search").addEventListener("input", function () {
+        let v = this.value.toLowerCase();
+        let filtered = data.filter((el) => el.task.toLowerCase().includes(v));
+        display(filtered);
+      });
+
+      // sort
+      document.getElementById("sort").addEventListener("change", function () {
+        let v = this.value;
+        let sorted = [...data];
+
+        if (v == "high") {
+          sorted.sort((a, b) => a.priority.localeCompare(b.priority));
+        } else if (v == "low") {
+          sorted.sort((a, b) => b.priority.localeCompare(a.priority));
+        }
+
+        display(sorted);
+      });
+
+      // delete
+      function deleteTask(id) {
+        data = data.filter((el) => el.id !== id);
+        localStorage.setItem("tasks", JSON.stringify(data));
+        display(data);
+      }
+
+      // edit
+      function editTask(id) {
+        let task = data.find((el) => el.id === id);
+
+        let newTask = prompt("Edit task", task.task);
+        let newDate = prompt("Edit date", task.date);
+        let newPriority = prompt("Edit priority", task.priority);
+
+        if (newTask && newDate && newPriority) {
+          task.task = newTask;
+          task.date = newDate;
+          task.priority = newPriority;
+
+          localStorage.setItem("tasks", JSON.stringify(data));
+          display(data);
+        }
+      }
+    </script>
+  </body>
+</html>

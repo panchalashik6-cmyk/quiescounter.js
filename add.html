@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add Task</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        background: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .box {
+        background: white;
+        padding: 25px;
+        width: 350px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .add {
+        background: rgb(119, 180, 119);
+        color: black;
+      }
+      .show {
+        background: rgb(63, 63, 138);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="box">
+      <h2>Add Task</h2>
+
+      <form id="taskForm">
+        <input type="text" id="task" placeholder="Enter task" required />
+        <input type="date" id="date" required />
+
+        <select id="priority">
+          <option value="">Select Priority</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+
+        <button class="add">Add Task</button>
+        <button type="button" class="show" onclick="show()">Show Tasks</button>
+      </form>
+    </div>
+
+    <script>
+      let data = JSON.parse(localStorage.getItem("tasks")) || [];
+
+      document.getElementById("taskForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let task = document.getElementById("task").value;
+        let date = document.getElementById("date").value;
+        let priority = document.getElementById("priority").value;
+
+        let obj = {
+          id: Date.now(),
+          task,
+          date,
+          priority,
+        };
+
+        data.push(obj);
+        localStorage.setItem("tasks", JSON.stringify(data));
+
+        alert("Task Added");
+
+        document.getElementById("task").value = "";
+        document.getElementById("date").value = "";
+        document.getElementById("priority").value = "";
+      });
+
+      function show() {
+        window.location.href = "show.html";
+      }
+    </script>
+  </body>
+</html>
